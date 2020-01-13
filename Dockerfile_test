@@ -1,20 +1,16 @@
-FROM alpine:edge
+## ver_3.3.4
+FROM alpine:latest as builder
 MAINTAINER niiv0832 <dockerhubme-ssr@yahoo.com>
 
-ARG pkgname=shadowsocks-libev
-ARG pkgver=3.3.4
-ARG pkgrel=0
-ARG pkgdesc="lightweight secured SOCKS5 proxy"
-ARG url="https://github.com/shadowsocks/shadowsocks-libev"
-ARG arch="all"
-ARG license="GPLv3"
+ARG SSURL="https://github.com/shadowsocks/shadowsocks-libev"
+ARG EDGE="--repository=http://dl-cdn.alpinelinux.org/alpine/edge/main"
 
 
 RUN \
       apk update && \
       apk upgrade && \
       apk add \
-              wget \
+              git \
               autoconf \
               automake \
               libtool \
@@ -28,9 +24,25 @@ RUN \
               xmlto \
               gcc \
               alpine-sdk && \
-      apk add libbloom-dev --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main && \
-      apk add libcork-dev --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main && \
-      apk add libcorkipset-dev --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main && \
-      
-      wget --no-check-certificate https://github.com/shadowsocks/shadowsocks-libev/archive/v3.3.4.tar.gz -O /tmp//sssrc/v3.3.4.tar.gz
+      apk add libbloom-dev ${EDGE} && \
+      apk add libcork-dev ${EDGE} && \
+      apk add libcorkipset-dev ${EDGE} && \
+##      
+      mkdir /build && \
+      cd /buid && \
+      git clone https://github.com/shadowsocks/shadowsocks-libev.git && \
+      git clone https://github.com/shadowsocks/simple-obfs.git shadowsocks-obfs
+##      
+      cd /buid/shadowsocks-libev && \
+      git submodule update --init --recursive && \
+      ./autogen.sh && \     
+      ./configure --prefix=/usr --disable-documentation && \
+      make && \
+##      
+      cd /buid/shadowsocks-obfs && \
+      git submodule update --init --recursive && \
+      ./autogen.sh && \     
+      ./configure --prefix=/usr --disable-documentation && \
+      make && \
+
       
