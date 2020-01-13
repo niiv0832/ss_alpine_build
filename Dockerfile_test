@@ -22,7 +22,10 @@ RUN \
               c-ares-dev \
               asciidoc \
               xmlto \
+              build-base \
               gcc \
+              tar \
+              udns-dev \
               alpine-sdk && \
       apk add libbloom-dev ${EDGE} && \
       apk add libcork-dev ${EDGE} && \
@@ -45,4 +48,4 @@ RUN \
       ./configure --prefix=/usr --disable-documentation && \
       make && \
 
-      
+      udns-dev - nextstage
